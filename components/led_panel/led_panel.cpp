@@ -33,6 +33,9 @@ Hub75Config make_config()
     config.layout_cols = 2;
     config.layout = Hub75PanelLayout::TOP_LEFT_DOWN_ZIGZAG;
 	
+	
+	config.min_refresh_rate = 150;
+	
 
 
 #if ACTIVE_BOARD == BOARD_DEVKITC1

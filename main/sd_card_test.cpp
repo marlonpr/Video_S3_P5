@@ -37,7 +37,7 @@ void sd_card_test(void)
 
     sdmmc_host_t host = SDSPI_HOST_DEFAULT();
     host.slot = SPI2_HOST;
-    host.max_freq_khz = 10000;   // Start safe: 10 MHz
+    host.max_freq_khz = 20000;   // Start safe: 10 MHz
 
     spi_bus_config_t bus_cfg = {};
     bus_cfg.mosi_io_num = PIN_SD_MOSI;

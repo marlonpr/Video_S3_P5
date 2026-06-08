@@ -1060,28 +1060,31 @@ void play_rgb565_video(Hub75Driver *driver, const char *path)
 
     const TickType_t frame_delay = pdMS_TO_TICKS(1000 / VIDEO_FPS);
 
-    while (true) {
-        size_t read_bytes = fread(video_frame_buffer, 1, VIDEO_FRAME_SIZE, f);
+	TickType_t last_wake = xTaskGetTickCount();
 
-        if (read_bytes != VIDEO_FRAME_SIZE) {
-            ESP_LOGI("VIDEO", "End of video, looping");
-            fseek(f, 0, SEEK_SET);
-            continue;
-        }
+	while (true) {
+	    size_t read_bytes = fread(video_frame_buffer, 1, VIDEO_FRAME_SIZE, f);
 
-        driver->draw_pixels(0,
-                            0,
-                            VIDEO_WIDTH,
-                            VIDEO_HEIGHT,
-                            video_frame_buffer,
-                            Hub75PixelFormat::RGB565,
-                            Hub75ColorOrder::RGB,
-                            false);
+	    if (read_bytes != VIDEO_FRAME_SIZE) {
+	        //ESP_LOGI("VIDEO", "End of video, looping");
+	        fseek(f, 0, SEEK_SET);
+	        last_wake = xTaskGetTickCount();
+	        continue;
+	    }
 
-        driver->flip_buffer();
+	    driver->draw_pixels(0,
+	                        0,
+	                        VIDEO_WIDTH,
+	                        VIDEO_HEIGHT,
+	                        video_frame_buffer,
+	                        Hub75PixelFormat::RGB565,
+	                        Hub75ColorOrder::RGB,
+	                        false);
 
-        vTaskDelay(frame_delay);
-    }
+	    driver->flip_buffer();
+
+	    vTaskDelayUntil(&last_wake, frame_delay);
+	}
 
     fclose(f);
 }
@@ -1159,7 +1162,11 @@ extern "C" void app_main(void)
 
 	temporal_brightness = brightness_level;
 
-	driver.set_brightness(brightness_level_to_hub75(brightness_level));	
+	//driver.set_brightness(brightness_level_to_hub75(brightness_level));
+	
+	
+	driver.set_brightness(brightness_level_to_hub75(1));
+		
 	
 	start_logo_screen(3000);	
 
@@ -1190,17 +1197,57 @@ extern "C" void app_main(void)
 	
 	ESP_ERROR_CHECK(clock_buttons_init(PIN_MENU, PIN_UP, PIN_DOWN));
 	
-	xTaskCreatePinnedToCore(
-	    button_task,
-	    "ButtonTask",
-	    4096,
-	    &rtc,
-	    2,
-	    NULL,
-	    0
-	);
+	
+	
+	
+	sd_card_test();
+	play_rgb565_video(&driver, "/sdcard/video_128x64.rgb565");
+	
+
+	
+	
+	
+	
+	
+		
+/*
+int x = 0;
+int frame_counter = 0;
+
+while (true) {
+    if ((frame_counter % 3) == 0) {
+        x++;
+
+        if (x > 110) {
+            x = 0;
+        }
+    }
+
+    driver.clear();
+    driver.fill(x, 18, 18, 13, 255, 255, 255);
+    driver.flip_buffer();
+
+    frame_counter++;
+
+    vTaskDelay(pdMS_TO_TICKS(100));
+}
+*/
+	
+	
+	
 
 /*
+
+xTaskCreatePinnedToCore(
+    button_task,
+    "ButtonTask",
+    4096,
+    &rtc,
+    2,
+    NULL,
+    0
+);
+
 xTaskCreatePinnedToCore(
     display_update_task,
     "DisplayTask",
@@ -1210,42 +1257,27 @@ xTaskCreatePinnedToCore(
     NULL,
     1
 );
-*/
 
-    xTaskCreatePinnedToCore(
-        rtc_task,
-        "RtcTask",
-        4096,
-        &rtc,
-        1,
-        NULL,
-        0
-    );
+xTaskCreatePinnedToCore(
+    rtc_task,
+    "RtcTask",
+    4096,
+    &rtc,
+    1,
+    NULL,
+    0
+);
 
-    xTaskCreatePinnedToCore(
-        ds18b20_task,
-        "DS18B20Task",
-        4096,
-        &ambient_sensor,
-        1,
-        NULL,
-        0
-    );	
-	
-	
-	
-	sd_card_test();
-	
-	
-	
-	
-	
-	
-	
-	play_rgb565_video(&driver, "/sdcard/video_128x64.rgb565");
-	
-	
-	
+xTaskCreatePinnedToCore(
+    ds18b20_task,
+    "DS18B20Task",
+    4096,
+    &ambient_sensor,
+    1,
+    NULL,
+    0
+);
+*/	
 }
 
 
