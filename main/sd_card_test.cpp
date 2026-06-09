@@ -2,6 +2,8 @@
 
 #include "sd_card_test.h"
 
+#include "ethernet_file_server.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
@@ -127,4 +129,18 @@ void sd_card_test(void)
 
     // Keep mounted if you want to use it later for video.
     // Do not unmount here if your video player will use /sdcard.
+	
+	
+	ret = ethernet_file_server_start();
+
+	if (ret != ESP_OK) {
+	    ESP_LOGE(
+	        TAG,
+	        "Failed to start Ethernet file server: %s",
+	        esp_err_to_name(ret));
+	} else {
+	    ESP_LOGI(TAG, "Ethernet file server started");
+	}
+	
+	
 }

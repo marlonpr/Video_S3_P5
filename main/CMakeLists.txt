@@ -9,6 +9,7 @@ idf_component_register(
     "clock_protocol.cpp" 
     "clock_modes.cpp"
     "sd_card_test.cpp"
+    "ethernet_file_server.cpp"
     INCLUDE_DIRS "."
     REQUIRES led_panel 
     	DS3231 

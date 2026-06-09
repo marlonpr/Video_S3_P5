@@ -34,7 +34,7 @@ Hub75Config make_config()
     config.layout = Hub75PanelLayout::TOP_LEFT_DOWN_ZIGZAG;
 	
 	
-	config.min_refresh_rate = 150;
+	//config.min_refresh_rate = 150;
 	
 
 
