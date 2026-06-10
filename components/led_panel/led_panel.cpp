@@ -29,9 +29,11 @@ Hub75Config make_config()
 
     config.double_buffer = true;
 
-    config.layout_rows = 2;
-    config.layout_cols = 2;
+    config.layout_rows = 3;
+    config.layout_cols = 3;
     config.layout = Hub75PanelLayout::TOP_LEFT_DOWN_ZIGZAG;
+	
+	config.double_buffer = false;					// =========== COMMENT FOR DOUBLE BUFFER ===========
 	
 	
 	//config.min_refresh_rate = 150;

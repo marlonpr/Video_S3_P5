@@ -27,9 +27,9 @@ static Hub75Driver driver(config);
 
 #define VIDEO_STREAM_PORT 5001
 
-#define VIDEO_WIDTH       128
-#define VIDEO_HEIGHT      64
-#define VIDEO_FRAME_SIZE  (VIDEO_WIDTH * VIDEO_HEIGHT * 3)
+#define VIDEO_WIDTH       192
+#define VIDEO_HEIGHT      96
+#define VIDEO_FRAME_SIZE  (VIDEO_WIDTH * VIDEO_HEIGHT * 3)  // *3 for RGB888, 2 for RGB565
 
 static uint8_t video_stream_frame[VIDEO_FRAME_SIZE];
 
@@ -174,7 +174,7 @@ static void video_stream_task(void *argument)
 
         ESP_LOGI(
             TAG_VIDEO_STREAM,
-            "Waiting for RGB565 stream on TCP port %d",
+            "Waiting for RGB888 stream on TCP port %d",
             VIDEO_STREAM_PORT
         );
 
@@ -256,18 +256,42 @@ static void video_stream_task(void *argument)
                 video_stream_frame,
                 VIDEO_FRAME_SIZE)) {
 
-					hub75->draw_pixels(
-					    0,
-					    0,
-					    VIDEO_WIDTH,
-					    VIDEO_HEIGHT,
-					    video_stream_frame,
-					    Hub75PixelFormat::RGB888,
-					    Hub75ColorOrder::RGB,
-					    false
-					);
+			
+					
+			/*
+			
+			//======================== RGB565 ========================================
+			
+			hub75->draw_pixels(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT,
+			                   video_stream_frame,
+			                   Hub75PixelFormat::RGB565,
+			                   Hub75ColorOrder::RGB,
+			                   false);
+							   
+		    //===================================================================================================
+		   
+			*/
+			
+			//======================== RGB888 ========================================
+			
+			hub75->draw_pixels(
+			    0,
+			    0,
+			    VIDEO_WIDTH,
+			    VIDEO_HEIGHT,
+			    video_stream_frame,
+			    Hub75PixelFormat::RGB888,
+			    Hub75ColorOrder::RGB,
+			    false
+			);
+			
+			//===================================================================================================
+			
+			
 
-					hub75->flip_buffer();
+							   
+
+					//hub75->flip_buffer();     // =========== COMMENT FOR SINGLE BUFFER =========== 
 
                 frame_number++;
 
@@ -294,7 +318,7 @@ static void video_stream_task(void *argument)
              * Remove these lines if you want the last frame to remain visible.
              */
             hub75->clear();
-            hub75->flip_buffer();
+            //hub75->flip_buffer();   				// =========== COMMENT FOR SINGLE BUFFER ===========
 
             ESP_LOGI(
                 TAG_VIDEO_STREAM,
@@ -326,7 +350,7 @@ extern "C" void app_main(void)
         return;
     }
 
-    driver.set_brightness(128);
+    driver.set_brightness(25);
 
     esp_err_t ret = ethernet_file_server_start();
 
@@ -356,7 +380,7 @@ extern "C" void app_main(void)
 
     ESP_LOGI(
         TAG,
-        "RGB565 video stream ready on port %d",
+        "RGB888 video stream ready on port %d",
         VIDEO_STREAM_PORT
     );
 }
@@ -404,7 +428,7 @@ static Hub75Driver driver(config);
 // Change this GPIO to your desired video button
 #define VIDEO_BUTTON_GPIO GPIO_NUM_42
 
-#define VIDEO_FILE_PATH "/sdcard/video_128x64.rgb888"
+#define VIDEO_FILE_PATH "/sdcard/video_128x64.RGB888"
 
 static const char *TAG_VIDEO = "VIDEO";
 static const char *TAG_VIDEO_BUTTON = "VIDEO_BUTTON";
